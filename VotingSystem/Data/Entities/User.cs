@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace VotingSystem.Models
+namespace VotingSystem.Data.Entities
 {
     public class User : IdentityUser
     {
-        public string MatricNumber { get; set; }
-        public int DepartmentId { get; set; }
+        public Guid MatricNumber { get; set; }
+        public Guid DepartmentId { get; set; }
         public Department Department { get; set; }
-        public int CollegeId { get; set; }
+        public Guid CollegeId { get; set; }
         public College College { get; set; }
     }
 }
