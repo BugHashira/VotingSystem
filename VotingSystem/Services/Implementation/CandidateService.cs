@@ -1,9 +1,9 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VotingSystem.Services.Interface;
+using VotingSystem.Data.Dto.Candidates;
+using VotingSystem.Data.Enums;
 
 namespace VotingSystem.Services
 {
@@ -16,26 +16,79 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Candidate>> GetAllCandidatesAsync()
+        public async Task<IEnumerable<CandidateDto>> GetAllCandidatesAsync()
         {
-            return await _context.Candidates.ToListAsync();
+            return await _context.Candidates
+                .Include(x => x.Election)
+                .Include(x => x.Position)
+                .Select(x => new CandidateDto
+                {
+                    Id = x.Id,
+                    ApprovalStatus = x.ApprovalStatus,
+                    CandidateName = x.CandidateName,
+                    ElectionId = x.ElectionId,
+                    ElectionName = x.Election.ElectionName,
+                    Level = x.Level,
+                    MatricNumber = x.MatricNumber,
+                    PositionId = x.PositionId,
+                    PositionName = x.Position.PositionName
+
+                }).ToListAsync();
         }
 
-        public async Task<Candidate> GetCandidateByIdAsync(int id)
+        public async Task<CandidateDto> GetCandidateByIdAsync(Guid id)
         {
-            return await _context.Candidates.FindAsync(id);
+            return await _context.Candidates.Include(x => x.Election)
+                .Include(x => x.Position)
+                .Where(x => x.Id.Equals(id))
+                .Select(x => new CandidateDto
+                {
+                    Id = x.Id,
+                    ApprovalStatus = x.ApprovalStatus,
+                    CandidateName = x.CandidateName,
+                    ElectionId = x.ElectionId,
+                    ElectionName = x.Election.ElectionName,
+                    Level = x.Level,
+                    MatricNumber = x.MatricNumber,
+                    PositionId = x.PositionId,
+                    PositionName = x.Position.PositionName
+                }).FirstOrDefaultAsync();
         }
 
-        public async Task AddCandidateAsync(Candidate candidate)
+        public async Task AddCandidateAsync(CreateCandidateDto request)
         {
+            var candidate = new Candidate()
+            {
+                Id = Guid.NewGuid(),
+                ElectionId = request.ElectionId,
+                ApprovalStatus = ApprovalStatus.Pending,
+                CandidateName = request.CandidateName,
+                CreatedDate = DateTime.UtcNow,
+                MatricNumber = request.MatricNumber,
+                PositionId = request.PositionId,
+                Level = request.Level
+            };
+
             _context.Candidates.Add(candidate);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateCandidateAsync(Candidate candidate)
+        public async Task UpdateCandidateAsync(Guid id, UpdateCandidateDto request)
         {
-            _context.Entry(candidate).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+
+            var candidateExist = await _context.Candidates.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (candidateExist != null)
+            {
+                candidateExist.MatricNumber = request.MatricNumber;
+                candidateExist.Level = request.Level;
+                candidateExist.PositionId = request.PositionId;
+                candidateExist.ElectionId = request.ElectionId;
+                candidateExist.CandidateName = request.CandidateName;
+                candidateExist.ModifiedDate = DateTime.Now;
+
+                _context.Candidates.Update(candidateExist);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteCandidateAsync(int id)
