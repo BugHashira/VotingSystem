@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace VotingSystem.Services
+namespace VotingSystem.Services.Interface
 {
     public interface IVoteService
     {
