@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingSystem.Data;
+using VotingSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,16 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<ICandidateService, CandidateService>();
+builder.Services.AddScoped<ICollegeService, CollegeService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IElectionService, ElectionService>();
+builder.Services.AddScoped<IManifestoService, ManifestoService>();
+builder.Services.AddScoped<IPaymentInvoiceService, PaymentInvoiceService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IVoteService, VoteService>();
 
 var app = builder.Build();
 
