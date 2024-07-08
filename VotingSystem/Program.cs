@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingSystem.Data;
 using VotingSystem.Services;
+using VotingSystem.Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
