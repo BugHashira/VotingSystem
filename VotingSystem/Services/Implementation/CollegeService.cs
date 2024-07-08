@@ -1,8 +1,6 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VotingSystem.Services.Interface;
 
 namespace VotingSystem.Services
