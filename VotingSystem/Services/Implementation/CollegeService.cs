@@ -1,12 +1,13 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using VotingSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
+using VotingSystem.Services.Interface;
 using VotingSystem.Dto.Colleges;
-
+using VotingSystem.Dto;
 
 namespace VotingSystem.Services
 {
+
     public class CollegeService : ICollegeService
     {
         private readonly ApplicationDbContext _context;
@@ -16,60 +17,198 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CollegeDto>> GetAllCollegesAsync()
+        public async Task<BaseResponseModel<IEnumerable<CollegeDto>>> GetAllCollegesAsync()
         {
-            return await _context.Colleges
-                .Select(x => new CollegeDto
-                {
-                    Id = x.Id,
-                    CollegeName = x.CollegeName
-                }).ToListAsync();
-        }
-
-        public async Task<CollegeDto> GetCollegeByIdAsync(Guid id)
-        {
-            return await _context.Colleges
-                .Where(x => x.Id.Equals(id))
-                .Select(x => new CollegeDto
-                {
-                    Id = x.Id,
-                    CollegeName = x.CollegeName
-                }).FirstOrDefaultAsync();
-        }
-
-        public async Task AddCollegeAsync(CreateCollegeDto request)
-        {
-            var college = new College
+            try
             {
-                Id = Guid.NewGuid(),
-                CollegeName = request.CollegeName,
-                CreatedDate = DateTime.UtcNow
-            };
+                var colleges = await _context.Colleges
+                    .Select(x => new CollegeDto
+                    {
+                        Id = x.Id,
+                        CollegeName = x.CollegeName
+                    }).ToListAsync();
 
-            _context.Colleges.Add(college);
-            await _context.SaveChangesAsync();
+                if (colleges.Count > 0)
+                {
+                    return new BaseResponseModel<IEnumerable<CollegeDto>>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = colleges
+                    };
+                }
+
+                return new BaseResponseModel<IEnumerable<CollegeDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "No record found",
+                    Data = colleges
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<IEnumerable<CollegeDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "CollegeService : GetAllCollegesAsync : Error Occured:"
+                };
+            }
         }
 
-        public async Task UpdateCollegeAsync(Guid id, UpdateCollegeDto request)
+        public async Task<BaseResponseModel<CollegeDto>> GetCollegeByIdAsync(Guid id)
         {
-            var collegeExist = await _context.Colleges.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (collegeExist != null)
+            try
             {
+                var college = await _context.Colleges
+                    .Where(x => x.Id.Equals(id))
+                    .Select(x => new CollegeDto
+                    {
+                        Id = x.Id,
+                        CollegeName = x.CollegeName
+                    }).FirstOrDefaultAsync();
+
+                if (college != null)
+                {
+                    return new BaseResponseModel<CollegeDto>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = college
+                    };
+                }
+
+                return new BaseResponseModel<CollegeDto>
+                {
+                    IsSuccessful = false,
+                    Message = "No record found"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<CollegeDto>()
+                {
+                    IsSuccessful = false,
+                    Message = "CollegeService : GetCollegeByIdAsync : Error Occured:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> AddCollegeAsync(CreateCollegeDto request)
+        {
+            try
+            {
+                var college = new College()
+                {
+                    Id = Guid.NewGuid(),
+                    CollegeName = request.CollegeName,
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                await _context.Colleges.AddAsync(college);
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Created successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Create failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CollegeService : AddCollegeAsync : Error Occured:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> UpdateCollegeAsync(Guid id, UpdateCollegeDto request)
+        {
+            try
+            {
+                var collegeExist = await _context.Colleges.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (collegeExist == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = true, Message = "No record found", Data = false };
+
                 collegeExist.CollegeName = request.CollegeName;
                 collegeExist.ModifiedDate = DateTime.Now;
 
                 _context.Colleges.Update(collegeExist);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Updated successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Update failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CollegeService : UpdateCollegeAsync : Error Occured:"
+                };
             }
         }
 
-        public async Task DeleteCollegeAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeleteCollegeAsync(int id)
         {
-            var college = await _context.Colleges.FindAsync(id);
-            if (college != null)
+            try
             {
+                var college = await _context.Colleges.FindAsync(id);
+
+                if (college == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = true, Message = "No record found", Data = false };
+
                 _context.Colleges.Remove(college);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Deleted successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Delete failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CollegeService : DeleteCollegeAsync : Error Occured:"
+                };
             }
         }
     }

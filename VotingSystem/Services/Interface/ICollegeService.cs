@@ -1,13 +1,14 @@
-﻿using VotingSystem.Dto.Colleges;
+﻿using VotingSystem.Dto;
+using VotingSystem.Dto.Colleges;
 
 namespace VotingSystem.Services.Interface
 {
     public interface ICollegeService
     {
-        Task<IEnumerable<CollegeDto>> GetAllCollegesAsync();
-        Task<CollegeDto> GetCollegeByIdAsync(Guid id);
-        Task AddCollegeAsync(CreateCollegeDto request);
-        Task UpdateCollegeAsync(Guid id, UpdateCollegeDto request);
-        Task DeleteCollegeAsync(int id);
+        Task<BaseResponseModel<bool>> AddCollegeAsync(CreateCollegeDto request);
+        Task<BaseResponseModel<bool>> DeleteCollegeAsync(int id);
+        Task<BaseResponseModel<IEnumerable<CollegeDto>>> GetAllCollegesAsync();
+        Task<BaseResponseModel<CollegeDto>> GetCollegeByIdAsync(Guid id);
+        Task<BaseResponseModel<bool>> UpdateCollegeAsync(Guid id, UpdateCollegeDto request);
     }
 }

@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VotingSystem.Dto.Elections;
+using VotingSystem.Dto;
 
 namespace VotingSystem.Services.Interface
 {
     public interface IElectionService
     {
-        Task<IEnumerable<ElectionDto>> GetAllElectionsAsync();
-        Task<ElectionDto> GetElectionByIdAsync(Guid id);
-        Task AddElectionAsync(CreateElectionDto request);
-        Task UpdateElectionAsync(Guid id, UpdateElectionDto request);
-        Task DeleteElectionAsync(int id);
+        Task<BaseResponseModel<bool>> AddElectionAsync(CreateElectionDto request);
+        Task<BaseResponseModel<bool>> DeleteElectionAsync(int id);
+        Task<BaseResponseModel<IEnumerable<ElectionDto>>> GetAllElectionsAsync();
+        Task<BaseResponseModel<ElectionDto>> GetElectionByIdAsync(Guid id);
+        Task<BaseResponseModel<bool>> UpdateElectionAsync(Guid id, UpdateElectionDto request);
     }
 }

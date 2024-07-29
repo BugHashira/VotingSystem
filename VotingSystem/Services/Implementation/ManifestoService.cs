@@ -1,11 +1,13 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using VotingSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
+using VotingSystem.Services.Interface;
+using VotingSystem.Dto;
 using VotingSystem.Dto.Manifestoes;
 
 namespace VotingSystem.Services
 {
+
     public class ManifestoService : IManifestoService
     {
         private readonly ApplicationDbContext _context;
@@ -15,68 +17,206 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<ManifestoDto>> GetAllManifestosAsync()
+        public async Task<BaseResponseModel<IEnumerable<ManifestoDto>>> GetAllManifestosAsync()
         {
-            return await _context.Manifestos
-                .Include(x => x.Candidate)
-                .Select(x => new ManifestoDto
-                {
-                    Id = x.Id,
-                    CandidateId = x.CandidateId,
-                    ManifestoNote = x.ManifestoNote,
-                    CandidateName = x.Candidate.CandidateName
-                }).ToListAsync();
-        }
-
-        public async Task<ManifestoDto> GetManifestoByIdAsync(Guid id)
-        {
-            return await _context.Manifestos
-                .Include(x => x.Candidate)
-                .Where(x => x.Id.Equals(id))
-                .Select(x => new ManifestoDto
-                {
-                    Id = x.Id,
-                    CandidateId = x.CandidateId,
-                    ManifestoNote = x.ManifestoNote,
-                    CandidateName = x.Candidate.CandidateName
-                }).FirstOrDefaultAsync();
-        }
-
-        public async Task AddManifestoAsync(CreateManifestoDto request)
-        {
-            var manifesto = new Manifesto
+            try
             {
-                Id = Guid.NewGuid(),
-                CandidateId = request.CandidateId,
-                ManifestoNote = request.ManifestoNote,
-                CreatedDate = DateTime.UtcNow
-            };
+                var manifestos = await _context.Manifestos
+                    .Include(x => x.Candidate)
+                    .Select(x => new ManifestoDto
+                    {
+                        Id = x.Id,
+                        CandidateId = x.CandidateId,
+                        ManifestoNote = x.ManifestoNote,
+                        CandidateName = x.Candidate.CandidateName
+                    }).ToListAsync();
 
-            _context.Manifestos.Add(manifesto);
-            await _context.SaveChangesAsync();
+                if (manifestos.Count > 0)
+                {
+                    return new BaseResponseModel<IEnumerable<ManifestoDto>>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = manifestos
+                    };
+                }
+
+                return new BaseResponseModel<IEnumerable<ManifestoDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "No record found",
+                    Data = manifestos
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<IEnumerable<ManifestoDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "ManifestoService : GetAllManifestosAsync : Error Occurred:"
+                };
+            }
         }
 
-        public async Task UpdateManifestoAsync(Guid id, UpdateManifestoDto request)
+        public async Task<BaseResponseModel<ManifestoDto>> GetManifestoByIdAsync(Guid id)
         {
-            var manifestoExist = await _context.Manifestos.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (manifestoExist != null)
+            try
             {
+                var manifesto = await _context.Manifestos
+                    .Include(x => x.Candidate)
+                    .Where(x => x.Id.Equals(id))
+                    .Select(x => new ManifestoDto
+                    {
+                        Id = x.Id,
+                        CandidateId = x.CandidateId,
+                        ManifestoNote = x.ManifestoNote,
+                        CandidateName = x.Candidate.CandidateName
+                    }).FirstOrDefaultAsync();
+
+                if (manifesto != null)
+                {
+                    return new BaseResponseModel<ManifestoDto>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = manifesto
+                    };
+                }
+
+                return new BaseResponseModel<ManifestoDto>
+                {
+                    IsSuccessful = false,
+                    Message = "No record found"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<ManifestoDto>()
+                {
+                    IsSuccessful = false,
+                    Message = "ManifestoService : GetManifestoByIdAsync : Error Occurred:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> AddManifestoAsync(CreateManifestoDto request)
+        {
+            try
+            {
+                var manifesto = new Manifesto()
+                {
+                    Id = Guid.NewGuid(),
+                    CandidateId = request.CandidateId,
+                    ManifestoNote = request.ManifestoNote,
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                await _context.Manifestos.AddAsync(manifesto);
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Created successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Create failed",
+                    Data = false
+                };
+            }
+            catch (Exception)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "ManifestoService : AddManifestoAsync : Error Occurred:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> UpdateManifestoAsync(Guid id, UpdateManifestoDto request)
+        {
+            try
+            {
+                var manifestoExist = await _context.Manifestos.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (manifestoExist == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
+
                 manifestoExist.CandidateId = request.CandidateId;
                 manifestoExist.ManifestoNote = request.ManifestoNote;
                 manifestoExist.ModifiedDate = DateTime.Now;
 
                 _context.Manifestos.Update(manifestoExist);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Updated successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Update failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "ManifestoService : UpdateManifestoAsync : Error Occurred:"
+                };
             }
         }
 
-        public async Task DeleteManifestoAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeleteManifestoAsync(int id)
         {
-            var manifesto = await _context.Manifestos.FindAsync(id);
-            if (manifesto != null)
+            try
             {
+                var manifesto = await _context.Manifestos.FindAsync(id);
+
+                if (manifesto == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
+
                 _context.Manifestos.Remove(manifesto);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Deleted successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Delete failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "ManifestoService : DeleteManifestoAsync : Error Occurred:"
+                };
             }
         }
     }

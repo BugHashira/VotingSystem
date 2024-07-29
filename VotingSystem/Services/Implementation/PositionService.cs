@@ -1,8 +1,9 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using VotingSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
+using VotingSystem.Services.Interface;
 using VotingSystem.Dto.Positions;
+using VotingSystem.Dto;
 
 namespace VotingSystem.Services
 {
@@ -15,64 +16,202 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<PositionDto>> GetAllPositionsAsync()
+        public async Task<BaseResponseModel<IEnumerable<PositionDto>>> GetAllPositionsAsync()
         {
-            return await _context.Positions
-                .Select(x => new PositionDto
-                {
-                    Id = x.Id,
-                    Price = x.Price,
-                    PositionDescription = x.PositionDescription
-                }).ToListAsync();
-        }
-
-        public async Task<PositionDto> GetPositionByIdAsync(Guid id)
-        {
-            return await _context.Positions
-                .Where(x => x.Id.Equals(id))
-                .Select(x => new PositionDto
-                {
-                    Id = x.Id,
-                    Price = x.Price,
-                    PositionDescription = x.PositionDescription
-                }).FirstOrDefaultAsync();
-        }
-
-        public async Task AddPositionAsync(CreatePositionDto request)
-        {
-            var position = new Position
+            try
             {
-                Id = Guid.NewGuid(),
-                Price = request.Price,
-                PositionDescription = request.PositionDescription,
-                CreatedDate = DateTime.UtcNow
-            };
+                var positions = await _context.Positions
+                    .Select(x => new PositionDto
+                    {
+                        Id = x.Id,
+                        Price = x.Price,
+                        PositionDescription = x.PositionDescription
+                    }).ToListAsync();
 
-            _context.Positions.Add(position);
-            await _context.SaveChangesAsync();
+                if (positions.Count > 0)
+                {
+                    return new BaseResponseModel<IEnumerable<PositionDto>>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = positions
+                    };
+                }
+
+                return new BaseResponseModel<IEnumerable<PositionDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "No record found",
+                    Data = positions
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<IEnumerable<PositionDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : GetAllPositionsAsync : Error Occurred:"
+                };
+            }
         }
 
-        public async Task UpdatePositionAsync(Guid id, UpdatePositionDto request)
+        public async Task<BaseResponseModel<PositionDto>> GetPositionByIdAsync(Guid id)
         {
-            var positionExist = await _context.Positions.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (positionExist != null)
+            try
             {
+                var position = await _context.Positions
+                    .Where(x => x.Id.Equals(id))
+                    .Select(x => new PositionDto
+                    {
+                        Id = x.Id,
+                        Price = x.Price,
+                        PositionDescription = x.PositionDescription
+                    }).FirstOrDefaultAsync();
+
+                if (position != null)
+                {
+                    return new BaseResponseModel<PositionDto>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = position
+                    };
+                }
+
+                return new BaseResponseModel<PositionDto>
+                {
+                    IsSuccessful = false,
+                    Message = "No record found"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<PositionDto>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : GetPositionByIdAsync : Error Occurred:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> AddPositionAsync(CreatePositionDto request)
+        {
+            try
+            {
+                var position = new Position()
+                {
+                    Id = Guid.NewGuid(),
+                    Price = request.Price,
+                    PositionDescription = request.PositionDescription,
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                await _context.Positions.AddAsync(position);
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data created successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Create failed",
+                    Data = false
+                };
+            }
+            catch (Exception)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : AddPositionAsync : Error Occurred:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> UpdatePositionAsync(Guid id, UpdatePositionDto request)
+        {
+            try
+            {
+                var positionExist = await _context.Positions.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (positionExist == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
+
                 positionExist.Price = request.Price;
                 positionExist.PositionDescription = request.PositionDescription;
                 positionExist.ModifiedDate = DateTime.Now;
 
                 _context.Positions.Update(positionExist);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data updated successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Update failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : UpdatePositionAsync : Error Occurred:"
+                };
             }
         }
 
-        public async Task DeletePositionAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeletePositionAsync(int id)
         {
-            var position = await _context.Positions.FindAsync(id);
-            if (position != null)
+            try
             {
+                var position = await _context.Positions.FindAsync(id);
+
+                if (position == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
+
                 _context.Positions.Remove(position);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data deleted successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Delete failed",
+                    Data = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : DeletePositionAsync : Error Occurred:"
+                };
             }
         }
     }

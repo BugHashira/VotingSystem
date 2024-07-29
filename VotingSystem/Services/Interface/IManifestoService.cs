@@ -1,13 +1,14 @@
-﻿using VotingSystem.Dto.Manifestoes;
+﻿using VotingSystem.Dto;
+using VotingSystem.Dto.Manifestoes;
 
 namespace VotingSystem.Services.Interface
 {
     public interface IManifestoService
     {
-        Task<IEnumerable<ManifestoDto>> GetAllManifestosAsync();
-        Task<ManifestoDto> GetManifestoByIdAsync(Guid id);
-        Task AddManifestoAsync(CreateManifestoDto request);
-        Task UpdateManifestoAsync(Guid id, UpdateManifestoDto request);
-        Task DeleteManifestoAsync(int id);
+        Task<BaseResponseModel<bool>> AddManifestoAsync(CreateManifestoDto request);
+        Task<BaseResponseModel<bool>> DeleteManifestoAsync(int id);
+        Task<BaseResponseModel<IEnumerable<ManifestoDto>>> GetAllManifestosAsync();
+        Task<BaseResponseModel<ManifestoDto>> GetManifestoByIdAsync(Guid id);
+        Task<BaseResponseModel<bool>> UpdateManifestoAsync(Guid id, UpdateManifestoDto request);
     }
 }

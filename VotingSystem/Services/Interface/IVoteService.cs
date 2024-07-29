@@ -1,13 +1,14 @@
-﻿using VotingSystem.Dto.Votes;
+﻿using VotingSystem.Dto;
+using VotingSystem.Dto.Votes;
 
 namespace VotingSystem.Services.Interface
 {
     public interface IVoteService
     {
-        Task<IEnumerable<VoteDto>> GetAllVotesAsync();
-        Task<VoteDto> GetVoteByIdAsync(Guid id);
-        Task AddVoteAsync(CreateVoteDto request);
-        Task UpdateVoteAsync(Guid id, UpdateVoteDto request);
-        Task DeleteVoteAsync(int id);
+        Task<BaseResponseModel<bool>> AddVoteAsync(CreateVoteDto request);
+        Task<BaseResponseModel<bool>> DeleteVoteAsync(int id);
+        Task<BaseResponseModel<IEnumerable<VoteDto>>> GetAllVotesAsync();
+        Task<BaseResponseModel<VoteDto>> GetVoteByIdAsync(string id);
+        Task<BaseResponseModel<bool>> UpdateVoteAsync(Guid id, UpdateVoteDto request);
     }
 }
