@@ -1,13 +1,14 @@
-﻿using VotingSystem.Dto.Candidates;
+﻿using VotingSystem.Dto;
+using VotingSystem.Dto.Candidates;
 
 namespace VotingSystem.Services.Interface
 {
     public interface ICandidateService
     {
-        Task<IEnumerable<CandidateDto>> GetAllCandidatesAsync();
-        Task<CandidateDto> GetCandidateByIdAsync(Guid id);
-        Task AddCandidateAsync(CreateCandidateDto request);
-        Task UpdateCandidateAsync(Guid id, UpdateCandidateDto request);
-        Task DeleteCandidateAsync(int id);
+        Task<BaseResponseModel<bool>> AddCandidateAsync(CreateCandidateDto request);
+        Task<BaseResponseModel<bool>> DeleteCandidateAsync(int id);
+        Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync();
+        Task<BaseResponseModel<CandidateDto>> GetCandidateByIdAsync(Guid id);
+        Task<BaseResponseModel<bool>> UpdateCandidateAsync(Guid id, UpdateCandidateDto request);
     }
 }

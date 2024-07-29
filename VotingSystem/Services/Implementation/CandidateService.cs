@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using VotingSystem.Services.Interface;
 using VotingSystem.Data.Enums;
 using VotingSystem.Dto.Candidates;
+using VotingSystem.Dto;
 
 namespace VotingSystem.Services
 {
+ 
+
     public class CandidateService : ICandidateService
     {
         private readonly ApplicationDbContext _context;
@@ -16,29 +19,63 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CandidateDto>> GetAllCandidatesAsync()
+        public async Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync()
         {
-            return await _context.Candidates
-                .Include(x => x.Election)
-                .Include(x => x.Position)
-                .Select(x => new CandidateDto
-                {
-                    Id = x.Id,
-                    ApprovalStatus = x.ApprovalStatus,
-                    CandidateName = x.CandidateName,
-                    ElectionId = x.ElectionId,
-                    ElectionName = x.Election.ElectionName,
-                    Level = x.Level,
-                    MatricNumber = x.MatricNumber,
-                    PositionId = x.PositionId,
-                    PositionName = x.Position.PositionName
 
-                }).ToListAsync();
+            try
+            {
+                var candidates = await _context.Candidates
+              .Include(x => x.Election)
+              .Include(x => x.Position)
+              .Select(x => new CandidateDto
+              {
+                  Id = x.Id,
+                  ApprovalStatus = x.ApprovalStatus,
+                  CandidateName = x.CandidateName,
+                  ElectionId = x.ElectionId,
+                  ElectionName = x.Election.ElectionName,
+                  Level = x.Level,
+                  MatricNumber = x.MatricNumber,
+                  PositionId = x.PositionId,
+                  PositionName = x.Position.PositionName
+
+              }).ToListAsync();
+
+
+                if (candidates.Count > 0)
+                {
+                    return new BaseResponseModel<IEnumerable<CandidateDto>>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = candidates
+                    };
+                }
+
+                return new BaseResponseModel<IEnumerable<CandidateDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "No record found",
+                    Data = candidates
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponseModel<IEnumerable<CandidateDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "CandidateService : GetAllCandidatesAsync : Error Occured:"
+                };
+            }
         }
 
-        public async Task<CandidateDto> GetCandidateByIdAsync(Guid id)
+        public async Task<BaseResponseModel<CandidateDto>> GetCandidateByIdAsync(Guid id)
         {
-            return await _context.Candidates
+
+            try
+            {
+                var candidate = await _context.Candidates
                 .Include(x => x.Election)
                 .Include(x => x.Position)
                 .Where(x => x.Id.Equals(id))
@@ -54,32 +91,92 @@ namespace VotingSystem.Services
                     PositionId = x.PositionId,
                     PositionName = x.Position.PositionName
                 }).FirstOrDefaultAsync();
+
+
+                if (candidate != null)
+                {
+                    return new BaseResponseModel<CandidateDto>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = candidate
+                    };
+                }
+
+                return new BaseResponseModel<CandidateDto>
+                {
+                    IsSuccessful = false,
+                    Message = "No record found"
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponseModel<CandidateDto>()
+                {
+                    IsSuccessful = false,
+                    Message = "CandidateService : GetCandidatesAsync : Error Occured:"
+                };
+            }
+
         }
 
-        public async Task AddCandidateAsync(CreateCandidateDto request)
+        public async Task<BaseResponseModel<bool>> AddCandidateAsync(CreateCandidateDto request)
         {
-            var candidate = new Candidate()
+            try
             {
-                Id = Guid.NewGuid(),
-                ElectionId = request.ElectionId,
-                ApprovalStatus = ApprovalStatus.Pending,
-                CandidateName = request.CandidateName,
-                CreatedDate = DateTime.UtcNow,
-                MatricNumber = request.MatricNumber,
-                PositionId = request.PositionId,
-                Level = request.Level
-            };
+                var candidate = new Candidate()
+                {
+                    Id = Guid.NewGuid(),
+                    ElectionId = request.ElectionId,
+                    ApprovalStatus = ApprovalStatus.Pending,
+                    CandidateName = request.CandidateName,
+                    CreatedDate = DateTime.UtcNow,
+                    MatricNumber = request.MatricNumber,
+                    PositionId = request.PositionId,
+                    Level = request.Level
+                };
 
-            _context.Candidates.Add(candidate);
-            await _context.SaveChangesAsync();
+                await _context.Candidates.AddAsync(candidate);
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Created successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Create failed",
+                    Data = false
+                };
+
+            }
+            catch (Exception)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CandidateService : AddCandidateAsync : Error Occured:"
+                };
+            }
         }
 
-        public async Task UpdateCandidateAsync(Guid id, UpdateCandidateDto request)
+        public async Task<BaseResponseModel<bool>> UpdateCandidateAsync(Guid id, UpdateCandidateDto request)
         {
 
-            var candidateExist = await _context.Candidates.Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (candidateExist != null)
+            try
             {
+                var candidateExist = await _context.Candidates.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (candidateExist == null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = true, Message = "No record found", Data = false };
+
                 candidateExist.MatricNumber = request.MatricNumber;
                 candidateExist.Level = request.Level;
                 candidateExist.PositionId = request.PositionId;
@@ -88,18 +185,73 @@ namespace VotingSystem.Services
                 candidateExist.ModifiedDate = DateTime.Now;
 
                 _context.Candidates.Update(candidateExist);
-                await _context.SaveChangesAsync();
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Updated successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Upadte failed",
+                    Data = false
+                };
+
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CandidateService : UpdateCandidateAsync : Error Occured:"
+                };
             }
         }
 
-        public async Task DeleteCandidateAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeleteCandidateAsync(int id)
         {
-            var candidate = await _context.Candidates.FindAsync(id);
-            if (candidate != null)
+
+            try
             {
-                _context.Candidates.Remove(candidate);
-                await _context.SaveChangesAsync();
+                var candidate = await _context.Candidates.FindAsync(id);
+
+                if (candidate != null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = true, Message = "No record found", Data = false };
+
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return new BaseResponseModel<bool>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data Deleted successfully",
+                        Data = true
+                    };
+                }
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "Delete failed",
+                    Data = false
+                };
             }
+            catch (Exception ex)
+            {
+
+                return new BaseResponseModel<bool>()
+                {
+                    IsSuccessful = false,
+                    Message = "CandidateService : UpdateCandidateAsync : Error Occured:"
+                };
+            }
+
         }
     }
 }
