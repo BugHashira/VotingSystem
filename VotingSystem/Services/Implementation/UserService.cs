@@ -1,9 +1,9 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VotingSystem.Services.Interface;
+using VotingSystem.Data.Dto.User;
+using Microsoft.EntityFrameworkCore;
+using VotingSystem.Data.Dto.Users;
 
 namespace VotingSystem.Services
 {
@@ -16,26 +16,65 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(x => x.College)
+                .Include(x => x.Department)
+                .Select(x => new UserDto
+                {
+                    Id = Guid.Parse(x.Id),
+                    MatricNumber = x.MatricNumber,
+                    CollegeName = x.College.CollegeName,
+                    CollegeId = x.CollegeId,
+                    DepartmentName = x.Department.DepartmentName,
+                    DepartmentId = x.DepartmentId
+                }).ToListAsync();
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<UserDto> GetUserByIdAsync(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(x => x.College)
+                .Include(x => x.Department)
+                .Where(x => x.Id.Equals(id))
+                .Select(x => new UserDto
+                {
+                    Id = Guid.Parse(x.Id),
+                    MatricNumber = x.MatricNumber,
+                    CollegeName = x.College.CollegeName,
+                    CollegeId = x.CollegeId,
+                    DepartmentName = x.Department.DepartmentName,
+                    DepartmentId = x.DepartmentId
+                }).FirstOrDefaultAsync();
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task AddUserAsync(CreateUserDto request)
         {
+            var user = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                MatricNumber = request.MatricNumber,
+                CollegeId = request.CollegeId,
+                DepartmentId = request.DepartmentId
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(Guid id, UpdateUserDto request)
         {
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var userExist = await _context.Users.Where(x => Guid.Parse(x.Id) == id).FirstOrDefaultAsync();
+            if (userExist != null)
+            {
+                userExist.MatricNumber = request.MatricNumber;
+                userExist.CollegeId = request.CollegeId;
+                userExist.DepartmentId = request.DepartmentId;
+
+                _context.Users.Update(userExist);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteUserAsync(int id)

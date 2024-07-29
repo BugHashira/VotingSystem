@@ -1,9 +1,9 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VotingSystem.Services.Interface;
+using VotingSystem.Data.Dto.Vote;
+using Microsoft.EntityFrameworkCore;
+using VotingSystem.Data.Dto.Votes;
 
 namespace VotingSystem.Services
 {
@@ -16,26 +16,67 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Vote>> GetAllVotesAsync()
+        public async Task<IEnumerable<VoteDto>> GetAllVotesAsync()
         {
-            return await _context.Votes.ToListAsync();
+            return await _context.Votes
+                .Include(x => x.User)
+                .Include(x => x.Candidate)
+                .Select(x => new VoteDto
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    CandidateId = x.CandidateId,
+                    VoteTime = x.VoteTime,
+                    UserName = x.User.UserName,
+                    CandidateName = x.Candidate.CandidateName
+                }).ToListAsync();
         }
 
-        public async Task<Vote> GetVoteByIdAsync(int id)
+        public async Task<VoteDto> GetVoteByIdAsync(Guid id)
         {
-            return await _context.Votes.FindAsync(id);
+            return await _context.Votes
+                .Include(x => x.User)
+                .Include(x => x.Candidate)
+                .Where(x => x.Id.Equals(id))
+                .Select(x => new VoteDto
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    CandidateId = x.CandidateId,
+                    VoteTime = x.VoteTime,
+                    UserName = x.User.UserName,
+                    CandidateName = x.Candidate.CandidateName
+                }).FirstOrDefaultAsync();
         }
 
-        public async Task AddVoteAsync(Vote vote)
+        public async Task AddVoteAsync(CreateVoteDto request)
         {
+            var vote = new Vote
+            {
+                Id = Guid.NewGuid(),
+                UserId = request.UserId.ToString(),
+                CandidateId = request.CandidateId,
+                VoteTime = request.VoteTime,
+                CreatedDate = DateTime.UtcNow
+            };
+
             _context.Votes.Add(vote);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateVoteAsync(Vote vote)
+        public async Task UpdateVoteAsync(Guid id, UpdateVoteDto request)
         {
-            _context.Entry(vote).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var voteExist = await _context.Votes.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (voteExist != null)
+            {
+                voteExist.UserId = request.UserId.ToString();
+                voteExist.CandidateId = request.CandidateId;
+                voteExist.VoteTime = request.VoteTime;
+                voteExist.ModifiedDate = DateTime.Now;
+
+                _context.Votes.Update(voteExist);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteVoteAsync(int id)

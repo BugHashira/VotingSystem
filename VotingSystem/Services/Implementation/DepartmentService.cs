@@ -1,9 +1,9 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VotingSystem.Services.Interface;
+using VotingSystem.Data.Dto.Department;
+using Microsoft.EntityFrameworkCore;
+using VotingSystem.Data.Dto.Departments;
 
 namespace VotingSystem.Services
 {
@@ -16,26 +16,51 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+        public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
         {
-            return await _context.Departments.ToListAsync();
+            return await _context.Departments
+                .Select(x => new DepartmentDto
+                {
+                    Id = x.Id,
+                    DepartmentName = x.DepartmentName,
+                }).ToListAsync();
         }
 
-        public async Task<Department> GetDepartmentByIdAsync(int id)
+        public async Task<DepartmentDto> GetDepartmentByIdAsync(Guid id)
         {
-            return await _context.Departments.FindAsync(id);
+            return await _context.Departments
+                .Where(x => x.Id.Equals(id))
+                .Select(x => new DepartmentDto
+                {
+                    Id = x.Id,
+                    DepartmentName = x.DepartmentName,
+                }).FirstOrDefaultAsync();
         }
 
-        public async Task AddDepartmentAsync(Department department)
+        public async Task AddDepartmentAsync(CreateDepartmentDto request)
         {
+            var department = new Department
+            {
+                Id = Guid.NewGuid(),
+                DepartmentName = request.DepartmentName,
+                CreatedDate = DateTime.UtcNow
+            };
+
             _context.Departments.Add(department);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateDepartmentAsync(Department department)
+        public async Task UpdateDepartmentAsync(Guid id, UpdateDepartmentDto request)
         {
-            _context.Entry(department).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var departmentExist = await _context.Departments.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (departmentExist != null)
+            {
+                departmentExist.DepartmentName = request.DepartmentName;
+                departmentExist.ModifiedDate = DateTime.Now;
+
+                _context.Departments.Update(departmentExist);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteDepartmentAsync(int id)

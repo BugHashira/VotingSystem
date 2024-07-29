@@ -1,0 +1,10 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VotingSystem.Data.Dto.Department
+{
+    public class CreateDepartmentDto
+    {
+        [Required(ErrorMessage = "Department name is required")]
+        public string DepartmentName { get; set; }
+    }
+}

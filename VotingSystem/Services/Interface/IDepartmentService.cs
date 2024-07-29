@@ -1,15 +1,19 @@
 ﻿using VotingSystem.Data.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VotingSystem.Data.Dto.College;
+using VotingSystem.Data.Dto.Colleges;
+using VotingSystem.Data.Dto.Department;
+using VotingSystem.Data.Dto.Departments;
 
 namespace VotingSystem.Services.Interface
 {
     public interface IDepartmentService
     {
-        Task<IEnumerable<Department>> GetAllDepartmentsAsync();
-        Task<Department> GetDepartmentByIdAsync(int id);
-        Task AddDepartmentAsync(Department department);
-        Task UpdateDepartmentAsync(Department department);
+        Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync();
+        Task<DepartmentDto> GetDepartmentByIdAsync(Guid id);
+        Task AddDepartmentAsync(CreateDepartmentDto request);
+        Task UpdateDepartmentAsync(Guid id, UpdateDepartmentDto request);
         Task DeleteDepartmentAsync(int id);
     }
 }

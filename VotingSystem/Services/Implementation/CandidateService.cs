@@ -38,7 +38,8 @@ namespace VotingSystem.Services
 
         public async Task<CandidateDto> GetCandidateByIdAsync(Guid id)
         {
-            return await _context.Candidates.Include(x => x.Election)
+            return await _context.Candidates
+                .Include(x => x.Election)
                 .Include(x => x.Position)
                 .Where(x => x.Id.Equals(id))
                 .Select(x => new CandidateDto

@@ -1,15 +1,14 @@
-﻿using VotingSystem.Data.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using VotingSystem.Data.Dto.Colleges;
+using VotingSystem.Data.Dto.College;
 
 namespace VotingSystem.Services.Interface
 {
     public interface ICollegeService
     {
-        Task<IEnumerable<College>> GetAllCollegesAsync();
-        Task<College> GetCollegeByIdAsync(int id);
-        Task AddCollegeAsync(College college);
-        Task UpdateCollegeAsync(College college);
+        Task<IEnumerable<CollegeDto>> GetAllCollegesAsync();
+        Task<CollegeDto> GetCollegeByIdAsync(Guid id);
+        Task AddCollegeAsync(CreateCollegeDto request);
+        Task UpdateCollegeAsync(Guid id, UpdateCollegeDto request);
         Task DeleteCollegeAsync(int id);
     }
 }
