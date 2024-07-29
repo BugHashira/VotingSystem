@@ -1,9 +1,8 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using VotingSystem.Services.Interface;
-using VotingSystem.Data.Dto.College;
 using Microsoft.EntityFrameworkCore;
-using VotingSystem.Data.Dto.Colleges;
+using VotingSystem.Dto.Colleges;
 
 
 namespace VotingSystem.Services

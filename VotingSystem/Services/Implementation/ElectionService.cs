@@ -1,9 +1,8 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using VotingSystem.Services.Interface;
-using VotingSystem.Data.Dto.Election;
 using Microsoft.EntityFrameworkCore;
-using VotingSystem.Data.Dto.Elections;
+using VotingSystem.Dto.Elections;
 
 namespace VotingSystem.Services
 {

@@ -1,4 +1,4 @@
-﻿using VotingSystem.Data.Dto.Candidates;
+﻿using VotingSystem.Dto.Candidates;
 
 namespace VotingSystem.Services.Interface
 {

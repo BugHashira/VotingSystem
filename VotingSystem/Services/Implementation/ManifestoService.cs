@@ -1,10 +1,8 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using VotingSystem.Services.Interface;
-using VotingSystem.Data.Dto.Manifesto;
 using Microsoft.EntityFrameworkCore;
-using VotingSystem.Data.Dto.Candidates;
-using VotingSystem.Data.Dto.Manifestoes;
+using VotingSystem.Dto.Manifestoes;
 
 namespace VotingSystem.Services
 {

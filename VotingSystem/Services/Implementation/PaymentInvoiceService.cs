@@ -1,9 +1,8 @@
 ﻿using VotingSystem.Data;
 using VotingSystem.Data.Entities;
 using VotingSystem.Services.Interface;
-using VotingSystem.Data.Dto.PaymentInvoice;
 using Microsoft.EntityFrameworkCore;
-using VotingSystem.Data.Dto.PaymentInvoices;
+using VotingSystem.Dto.PaymentInvoices;
 
 namespace VotingSystem.Services
 {

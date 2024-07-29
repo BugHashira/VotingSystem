@@ -1,10 +1,4 @@
-﻿using VotingSystem.Data.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VotingSystem.Data.Dto.College;
-using VotingSystem.Data.Dto.Colleges;
-using VotingSystem.Data.Dto.Positions;
-using VotingSystem.Data.Dto.Position;
+﻿using VotingSystem.Dto.Positions;
 
 namespace VotingSystem.Services.Interface
 {

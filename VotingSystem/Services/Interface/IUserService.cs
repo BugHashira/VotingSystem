@@ -1,8 +1,4 @@
-﻿using VotingSystem.Data.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VotingSystem.Data.Dto.Users;
-using VotingSystem.Data.Dto.User;
+﻿using VotingSystem.Dto.Users;
 
 namespace VotingSystem.Services.Interface
 {

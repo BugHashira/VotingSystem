@@ -1,5 +1,4 @@
-﻿using VotingSystem.Data.Dto.Colleges;
-using VotingSystem.Data.Dto.College;
+﻿using VotingSystem.Dto.Colleges;
 
 namespace VotingSystem.Services.Interface
 {

@@ -2,8 +2,8 @@
 using VotingSystem.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using VotingSystem.Services.Interface;
-using VotingSystem.Data.Dto.Candidates;
 using VotingSystem.Data.Enums;
+using VotingSystem.Dto.Candidates;
 
 namespace VotingSystem.Services
 {
