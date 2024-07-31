@@ -4,7 +4,7 @@ using VotingSystem.Services.Interface;
 
 namespace VotingSystem.Controllers
 {
-    [Route("Election")]
+    [Route("election")]
     public class ElectionController : Controller
     {
         private readonly IElectionService _electionService;
@@ -59,7 +59,7 @@ namespace VotingSystem.Controllers
 
 
 
-        [HttpGet("Election-detail/{id}")]
+        [HttpGet("detail/{id}")]
         public async Task<IActionResult> ElectionDetail(Guid id)
         {
             var result = await _electionService.GetElectionByIdAsync(id);
@@ -73,7 +73,7 @@ namespace VotingSystem.Controllers
         }
 
 
-        [HttpGet("books")]
+        [HttpGet("elections")]
         public async Task<IActionResult> Elections()
         {
             var result = await _electionService.GetAllElectionsAsync();
