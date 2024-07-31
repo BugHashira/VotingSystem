@@ -185,11 +185,11 @@ namespace VotingSystem.Services
             }
         }
 
-        public async Task<BaseResponseModel<bool>> DeleteElectionAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeleteElectionAsync(Guid id)
         {
             try
             {
-                var election = await _context.Elections.FindAsync(id);
+                var election = await _context.Elections.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (election == null)
                     return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };

@@ -198,7 +198,7 @@ namespace VotingSystem.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.ToTable("Candidates");
+                    b.ToTable("Candidates", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.College", b =>
@@ -219,7 +219,7 @@ namespace VotingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colleges");
+                    b.ToTable("Colleges", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.Department", b =>
@@ -240,7 +240,7 @@ namespace VotingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.Election", b =>
@@ -271,7 +271,7 @@ namespace VotingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Elections");
+                    b.ToTable("Elections", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.Manifesto", b =>
@@ -297,7 +297,7 @@ namespace VotingSystem.Migrations
 
                     b.HasIndex("CandidateId");
 
-                    b.ToTable("Manifestos");
+                    b.ToTable("Manifestos", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.PaymentInvoice", b =>
@@ -323,7 +323,7 @@ namespace VotingSystem.Migrations
 
                     b.HasIndex("CandidateId");
 
-                    b.ToTable("PaymentInvoices");
+                    b.ToTable("PaymentInvoices", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.Position", b =>
@@ -351,7 +351,7 @@ namespace VotingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Positions");
+                    b.ToTable("Positions", (string)null);
                 });
 
             modelBuilder.Entity("VotingSystem.Data.Entities.User", b =>
@@ -465,7 +465,7 @@ namespace VotingSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Votes");
+                    b.ToTable("Votes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

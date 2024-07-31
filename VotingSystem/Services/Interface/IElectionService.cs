@@ -9,7 +9,7 @@ namespace VotingSystem.Services.Interface
     public interface IElectionService
     {
         Task<BaseResponseModel<bool>> AddElectionAsync(CreateElectionDto request);
-        Task<BaseResponseModel<bool>> DeleteElectionAsync(int id);
+        Task<BaseResponseModel<bool>> DeleteElectionAsync(Guid id);
         Task<BaseResponseModel<IEnumerable<ElectionDto>>> GetAllElectionsAsync();
         Task<BaseResponseModel<ElectionDto>> GetElectionByIdAsync(Guid id);
         Task<BaseResponseModel<bool>> UpdateElectionAsync(Guid id, UpdateElectionDto request);

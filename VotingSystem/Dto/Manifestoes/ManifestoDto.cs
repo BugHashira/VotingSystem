@@ -1,6 +1,4 @@
-﻿using VotingSystem.Data.Dto.Candidates;
-
-namespace VotingSystem.Dto.Manifestoes
+﻿namespace VotingSystem.Dto.Manifestoes
 {
     public class ManifestoDto
     {
