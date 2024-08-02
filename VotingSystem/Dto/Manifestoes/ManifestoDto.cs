@@ -1,6 +1,5 @@
-﻿using VotingSystem.Dto.Candidates;
-
 namespace VotingSystem.Dto.Manifestoes
+
 {
     public class ManifestoDto
     {
