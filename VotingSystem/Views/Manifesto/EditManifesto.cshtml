@@ -1,0 +1,45 @@
+﻿@model VotingSystem.Dto.Manifestoes.ManifestoDto;
+
+@{
+    ViewData["Title"] = "Manifesto";
+    ViewData["SubTitle"] = "Edit Manifesto";
+
+    var id = ViewContext.RouteData.Values["id"];
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-user">
+            <div class="card-header">
+                <h5 class="card-title">@ViewData["SubTitle"]</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditManifesto" asp-route-id="@id">
+                    <div class="row">
+                        <div class="col-md-12 pr-1">
+                            <div class="form-group">
+                                <label>Manifesto Title</label>
+                                <input type="text" class="form-control" name="CandidateId" placeholder="Manifesto Title" value="@Model.CandidateId">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 pl-1">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" name="ManifestoNote" placeholder="Description">@Model.ManifestoNote</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary btn-round">Edit Manifesto</button>
+                            <a href="@Url.Action("Manifestoes")" class="btn btn-secondary btn-round">Manifestoes List</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

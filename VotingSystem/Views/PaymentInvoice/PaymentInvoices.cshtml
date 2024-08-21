@@ -1,0 +1,54 @@
+﻿@using VotingSystem.Dto.PaymentInvoices
+@model IEnumerable<PaymentInvoiceDto>;
+
+@{
+    ViewData["Title"] = "Payment Invoice";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title"> @ViewData["Title"]</h4>
+                <a href="@Url.Action("CreatePaymentInvoice")" class="card-description"> Create Payment Invoice </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th> Candidate Id </th>
+                                <th> Payment Evidence </th>
+                                <th> Action </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.CandidateId</td>
+                                        <td>@item.PaymentEvidence</td>
+                                        <td>
+                                            <a href="@Url.Action("EditPaymentInvoice",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                                View <i class="mdi mdi-file-check btn-icon-append"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center"> No data found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

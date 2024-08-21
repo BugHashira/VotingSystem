@@ -1,0 +1,57 @@
+﻿@using VotingSystem.Dto.Users;
+@model IEnumerable<UserDto>;
+
+@{
+    ViewData["Title"] = "User";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title"> @ViewData["Title"]</h4>
+                <a href="@Url.Action("CreateUser")" class="card-description"> Create User </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th> Matric Number </th>
+                                <th> CollegeId </th>
+                                <th> DepartmentId </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.MatricNumber</td>
+                                        <td>@item.CollegeId</td>
+                                        <td>@item.DepartmentId</td>
+                                        <td>
+                                            <a href="@Url.Action("EditUser", new { id = item.Id })" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                                Edit <i class="mdi mdi-file-check btn-icon-append"></i>
+                                            </a>
+                                            <a href="@Url.Action("DeleteUser", new { id = item.Id })" class="btn btn-gradient-danger btn-icon-text btn-sm">
+                                                Delete <i class="mdi mdi-delete btn-icon-append"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center"> No data found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
