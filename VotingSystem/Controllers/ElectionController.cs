@@ -9,9 +9,9 @@ namespace VotingSystem.Controllers
     {
         private readonly IElectionService _electionService;
 
-        public ElectionController(IElectionService bookService)
+        public ElectionController(IElectionService electionService)
         {
-            _electionService = bookService;
+            _electionService = electionService;
         }
 
         [HttpGet("create-election")]
