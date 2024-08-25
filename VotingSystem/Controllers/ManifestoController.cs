@@ -14,14 +14,14 @@ namespace VotingSystem.Controllers
             _manifestoService = manifestoService;
         }
 
-        [HttpGet("create-manifesto")]
-        public IActionResult CreateManifesto()
+        [HttpGet("create-manifesto/{candidateId]")]
+        public IActionResult CreateManifesto([FromRoute] Guid candidateId)
         {
             return View();
         }
 
-        [HttpPost("create-manifesto")]
-        public async Task<IActionResult> CreateManifesto([FromForm] CreateManifestoDto request)
+        [HttpPost("create-manifesto/{candidateId}")]
+        public async Task<IActionResult> CreateManifesto([FromRoute] Guid candidateId,[FromForm] CreateManifestoDto request)
         {
             var result = await _manifestoService.AddManifestoAsync(request);
 

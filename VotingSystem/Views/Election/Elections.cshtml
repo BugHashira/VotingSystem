@@ -22,8 +22,8 @@
                                 <th> Start Date </th>
                                 <th> End Date </th>
                                 <th> Action </th>
-                                <th> Candidate </th>
                                 <th> Result </th>
+                                <th> Candidate </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,16 +42,16 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="@Url.Action("CreateCandidate", "Candidate",new {electionId = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
-                                                Add Candidate <i class="mdi mdi-file-check btn-icon-append"></i>
-                                            </a>|
                                             <a href="@Url.Action("Candidates", "Candidate",new {electionId = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
-                                                Candidates <i class="mdi mdi-file-check btn-icon-append"></i>
+                                                Result <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
                                         </td>
                                         <td>
+                                            <a href="@Url.Action("CreateCandidate", "Candidate",new {electionId = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                                Add <i class="mdi mdi-file-check btn-icon-append"></i>
+                                            </a>|
                                             <a href="@Url.Action("Candidates", "Candidate",new {electionId = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
-                                                Result <i class="mdi mdi-file-check btn-icon-append"></i>
+                                                View <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
                                         </td>
                                     </tr>

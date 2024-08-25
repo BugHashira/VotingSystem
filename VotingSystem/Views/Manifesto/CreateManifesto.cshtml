@@ -4,6 +4,8 @@
 @{
     ViewData["Title"] = "Manifesto";
     ViewData["SubTitle"] = "Create Manifesto";
+
+    var id = ViewContext.RouteData.Values["candidateId"];
 }
 
 <div class="row">
@@ -13,7 +15,7 @@
                 <h5 class="card-title">@ViewData["SubTitle"]</h5>
             </div>
             <div class="card-body">
-                <form asp-action="CreateManifesto">
+                <form asp-action="CreateManifesto" asp-controller="Manifesto" asp-route-candidateId="@id">
                     <div class="row">
                         <div class="col-md-6 pr-1">
                             <div class="form-group">
@@ -26,7 +28,7 @@
                         <div class="col-md-6 pl-1">
                             <div class="form-group">
                                 <label>Manifesto Content</label>
-                                <textarea class="form-control" name="ManifestoNote" placeholder="Enter Manifesto"></textarea>
+                                <ima class="form-control" name="ManifestoNote" placeholder="Enter Manifesto"></ima>
                             </div>
                         </div>
                     </div>
