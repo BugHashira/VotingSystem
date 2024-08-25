@@ -84,7 +84,7 @@ namespace VotingSystem.Controllers
         }
 
         [HttpGet("delete/{id}")]
-        public async Task<IActionResult> DeletePosition(int id)
+        public async Task<IActionResult> DeletePosition(Guid id)
         {
             var result = await _positionService.DeletePositionAsync(id);
 

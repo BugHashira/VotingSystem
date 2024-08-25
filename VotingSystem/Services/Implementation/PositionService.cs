@@ -25,7 +25,8 @@ namespace VotingSystem.Services
                     {
                         Id = x.Id,
                         Price = x.Price,
-                        PositionDescription = x.PositionDescription
+                        PositionDescription = x.PositionDescription,
+                        PositionName = x.PositionName
                     }).ToListAsync();
 
                 if (positions.Count > 0)
@@ -65,7 +66,8 @@ namespace VotingSystem.Services
                     {
                         Id = x.Id,
                         Price = x.Price,
-                        PositionDescription = x.PositionDescription
+                        PositionDescription = x.PositionDescription,
+                        PositionName = x.PositionName
                     }).FirstOrDefaultAsync();
 
                 if (position != null)
@@ -98,10 +100,18 @@ namespace VotingSystem.Services
         {
             try
             {
+
+                var checkExistingPosition = await _context.Positions.FirstOrDefaultAsync(x =>x.PositionName.Equals( request.PositionName.ToLower()));
+
+                if (checkExistingPosition != null)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "Position name already exist", Data = true };
+
+
                 var position = new Position()
                 {
                     Id = Guid.NewGuid(),
                     Price = request.Price,
+                    PositionName = request.PositionName,
                     PositionDescription = request.PositionDescription,
                     CreatedDate = DateTime.UtcNow
                 };
@@ -146,6 +156,7 @@ namespace VotingSystem.Services
 
                 positionExist.Price = request.Price;
                 positionExist.PositionDescription = request.PositionDescription;
+                positionExist.PositionName = request.PositionName;
                 positionExist.ModifiedDate = DateTime.Now;
 
                 _context.Positions.Update(positionExist);
@@ -177,7 +188,7 @@ namespace VotingSystem.Services
             }
         }
 
-        public async Task<BaseResponseModel<bool>> DeletePositionAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeletePositionAsync(Guid id)
         {
             try
             {
@@ -211,6 +222,44 @@ namespace VotingSystem.Services
                 {
                     IsSuccessful = false,
                     Message = "PositionService : DeletePositionAsync : Error Occurred:"
+                };
+            }
+        }
+
+        public async Task<BaseResponseModel<IEnumerable<SelectPositionDto>>> GetPositionSelectAsync()
+        {
+            try
+            {
+                var positions = await _context.Positions
+                    .Select(x => new SelectPositionDto
+                    {
+                        Id = x.Id,
+                        PositionName = x.PositionName
+                    }).ToListAsync();
+
+                if (positions.Count > 0)
+                {
+                    return new BaseResponseModel<IEnumerable<SelectPositionDto>>()
+                    {
+                        IsSuccessful = true,
+                        Message = "Data retrieved successfully",
+                        Data = positions
+                    };
+                }
+
+                return new BaseResponseModel<IEnumerable<SelectPositionDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "No record found",
+                    Data = positions
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<IEnumerable<SelectPositionDto>>()
+                {
+                    IsSuccessful = false,
+                    Message = "PositionService : GetAllPositionsAsync : Error Occurred:"
                 };
             }
         }

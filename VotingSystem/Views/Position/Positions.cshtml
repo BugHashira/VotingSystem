@@ -17,6 +17,7 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th> Position Name </th>
                                 <th> Position Description </th>
                                 <th> Price </th>
                                 <th> Action </th>
@@ -28,12 +29,17 @@
                                 foreach (var item in Model)
                                 {
                                     <tr>
+                                        <td>@item.PositionName</td>
                                         <td>@item.PositionDescription</td>
                                         <td>@item.Price</td>
                                         <td>
                                             <a href="@Url.Action("EditPosition",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 View <i class="mdi mdi-file-check btn-icon-append"></i>
+                                            </a>|
+                                            <a href="@Url.Action("DeletePosition",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                                Delete <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
+
                                         </td>
                                     </tr>
 

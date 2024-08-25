@@ -4,7 +4,11 @@
 @{
     ViewData["Title"] = "Candidate";
     ViewData["SubTitle"] = "Create Candidate";
+
+    var id = ViewContext.RouteData.Values["electionId"];
 }
+
+
 
 <div class="row">
     <div class="col-md-12">
@@ -13,34 +17,54 @@
                 <h5 class="card-title">@ViewData["SubTitle"]</h5>
             </div>
             <div class="card-body">
-                <form asp-action="CreateCandidate">
+                <form asp-action="CreateCandidate" asp-controller="Candidate" asp-route-electionId="@id">
                     <div class="row">
                         <div class="col-md-6 pr-1">
                             <div class="form-group">
-                                <label>CandidateName</label>
+                                <label>Candidate Name</label>
                                 <input type="text" class="form-control" name="CandidateName" placeholder="Candidate Name">
                             </div>
                         </div>
-                        <div class="col-md-6 pl-1">
+
+
+                        <div class="col-md-6 pr-1">
                             <div class="form-group">
-                                <label>PositionId</label>
-                                <select class="form-control" name="PositionId">
-                                    <option value="president">President</option>
-                                    <option value="vicePresident">Vice President</option>
-                                    <option value="generalSecretary">General Secretary</option>
-                                    <option value="assGeneralSecretary">Ass. General Secretary</option>
-                                    <option value="directorOfSocials">Director Of Socials</option>
-                                    <option value="directorOfSports">Director Of Sports</option>
-                                    <option value="directorOfTreasury">Director Of Treasury</option>
-                                    <option value="directorOfFinance">Director Of Finance</option>
-                                    <option value="publicRelationsOfficer">Public Relations Officer</option>
-                                </select>
+                                <label>Matric Number</label>
+                                <input type="text" class="form-control" name="MatricNumber" placeholder="Matric Number">
                             </div>
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6 pl-1">
+                            <div class="form-group">
+                                <label>Level</label>
+                                <select class="form-control" name="Level">
+                                    <option value="100 Level">100 Level</option>
+                                    <option value="200 Level">200 Level</option>
+                                    <option value="300 Level">300 Level</option>
+                                    <option value="400 Level">400 Level</option>
+                                    <option value="500 Level">500 Level</option>
+                                    <option value="600 Level">600 Level</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6 pl-1">
+                            <div class="form-group">
+                                <label>Position</label>
+
+                                <select name="PositionId" class="form-control" asp-items="ViewBag.SelectPositions" required>
+                                    <option value=><i>Select position </i></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-primary btn-round">Create Candidate</button>
+                            <a href="@Url.Action("Elections","Election")" class="btn btn-secondary btn-round">Elections List</a>
                         </div>
                     </div>
                 </form>

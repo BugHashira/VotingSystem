@@ -19,7 +19,7 @@ namespace VotingSystem.Services
             _context = context;
         }
 
-        public async Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync()
+        public async Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync(Guid electionId)
         {
 
             try
@@ -27,6 +27,7 @@ namespace VotingSystem.Services
                 var candidates = await _context.Candidates
               .Include(x => x.Election)
               .Include(x => x.Position)
+              .Where(x => x.ElectionId == electionId)
               .Select(x => new CandidateDto
               {
                   Id = x.Id,

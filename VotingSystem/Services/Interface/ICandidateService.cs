@@ -7,7 +7,7 @@ namespace VotingSystem.Services.Interface
     {
         Task<BaseResponseModel<bool>> AddCandidateAsync(CreateCandidateDto request);
         Task<BaseResponseModel<bool>> DeleteCandidateAsync(int id);
-        Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync();
+        Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync(Guid electionId);
         Task<BaseResponseModel<CandidateDto>> GetCandidateByIdAsync(Guid id);
         Task<BaseResponseModel<bool>> UpdateCandidateAsync(Guid id, UpdateCandidateDto request);
     }

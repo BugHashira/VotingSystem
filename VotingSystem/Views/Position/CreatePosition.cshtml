@@ -15,6 +15,13 @@
             <div class="card-body">
                 <form asp-action="CreatePosition">
                     <div class="row">
+
+                        <div class="col-md-6 pr-1">
+                            <div class="form-group">
+                                <label>Position Name</label>
+                                <input type="text" class="form-control" name="PositionName" placeholder="Position Name">
+                            </div>
+                        </div>
                         <div class="col-md-6 pr-1">
                             <div class="form-group">
                                 <label>Position Description</label>
@@ -28,9 +35,12 @@
                             </div>
                         </div>
                     </div>
+
+
                     <div class="row">
                         <div class="col-md-4">
-                            <button type="submit" class="btn btn-primary btn-round">Create Position</button>
+                            <button type="submit" class="btn btn-primary btn-round">Add Position</button>
+                            <a href="@Url.Action("Positions")" class="btn btn-secondary btn-round">Elections List</a>
                         </div>
                     </div>
                 </form>

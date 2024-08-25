@@ -10,7 +10,7 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title"> @ViewData["Title"]</h4>
-                <a href="@Url.Action("CreateCandidate")" class="card-description"> Create Candidate </a>
+                @* <a href="@Url.Action("CreateCandidate")" class="card-description"> Create Candidate </a> *@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -19,9 +19,9 @@
                             <tr>
                                 <th> Candidate Name </th>
                                 <th> Matric Number </th>
-                                <th> Election Id </th>
+                                <th> Election</th>
                                 <th> Level </th>
-                                <th> Position Id </th>
+                                <th> Position</th>
                                 <th> Action </th>
                             </tr>
                         </thead>
@@ -33,12 +33,15 @@
                                     <tr>
                                         <td>@item.CandidateName</td>
                                         <td>@item.MatricNumber</td>
-                                        <td>@item.ElectionId</td>
+                                        <td>@item.ElectionName</td>
                                         <td>@item.Level</td>
-                                        <td>@item.PositionId</td>
+                                        <td>@item.PositionName</td>
                                         <td>
                                             <a href="@Url.Action("EditCandidate",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 View <i class="mdi mdi-file-check btn-icon-append"></i>
+                                            </a>|
+                                            <a href="@Url.Action("CreateManifesto", "Manifesto",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                                Add Manifesto <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
                                         </td>
                                     </tr>
