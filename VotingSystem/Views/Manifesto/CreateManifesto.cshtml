@@ -1,4 +1,5 @@
-﻿@using VotingSystem.Dto.Manifestoes;
+﻿@using VotingSystem.Data.Entities
+@using VotingSystem.Dto.Manifestoes;
 @model CreateManifestoDto;
 
 @{
@@ -20,15 +21,21 @@
                         <div class="col-md-6 pr-1">
                             <div class="form-group">
                                 <label>Candidate</label>
-                                <select class="form-control" name="CandidateId">
-                                    <!-- Populate with candidates -->
+
+                                <select class="form-control" asp-for="CandidateId">
+                                    <option value=""> 
+                                        @foreach(var item in Model.Candidates)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 pl-1">
-                            <div class="form-group">
-                                <label>Manifesto Content</label>
-                                <ima class="form-control" name="ManifestoNote" placeholder="Enter Manifesto"></ima>
+                            <label>Manifesto Content</label>
+                            <div style="padding: 1px; border: 1px solid #ccc; border-radius: 5px;">
+                                <input type="file" class="form-control" name="ManifestoNote" placeholder="Upload Manifesto" accept=".pdf,.doc,.docx,.txt">
                             </div>
                         </div>
                     </div>
@@ -42,3 +49,5 @@
         </div>
     </div>
 </div>
+
+

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VotingSystem.Services.Interface;
 using VotingSystem.Dto;
 using VotingSystem.Dto.Manifestoes;
+using System.Linq;
 
 namespace VotingSystem.Services
 {
@@ -101,12 +102,15 @@ namespace VotingSystem.Services
 
         public async Task<BaseResponseModel<bool>> AddManifestoAsync(CreateManifestoDto request)
         {
+            var candidate = await _context.Candidates
+                           .FirstOrDefaultAsync(c => c.Id == request.CandidateId);
             try
             {
                 var manifesto = new Manifesto()
                 {
                     Id = Guid.NewGuid(),
                     CandidateId = request.CandidateId,
+                    Candidate = candidate,
                     ManifestoNote = request.ManifestoNote,
                     CreatedDate = DateTime.UtcNow
                 };

@@ -5,6 +5,7 @@ using VotingSystem.Services.Interface;
 using VotingSystem.Data.Enums;
 using VotingSystem.Dto.Candidates;
 using VotingSystem.Dto;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace VotingSystem.Services
 {
@@ -253,6 +254,19 @@ namespace VotingSystem.Services
                 };
             }
 
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetCandidateListItem()
+        {
+            var candidates = await _context.Candidates.ToListAsync();
+
+            var selectListItem = candidates.Select(item => new SelectListItem()
+            {
+                Value = item.Id.ToString(),
+                Text = item.CandidateName
+            }).ToList();
+
+            return selectListItem;
         }
     }
 }

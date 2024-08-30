@@ -8,16 +8,24 @@ namespace VotingSystem.Controllers
     public class ManifestoController : Controller
     {
         private readonly IManifestoService _manifestoService;
+        private readonly ICandidateService _candidateService;
 
-        public ManifestoController(IManifestoService manifestoService)
+        public ManifestoController(IManifestoService manifestoService, ICandidateService candidateService)
         {
             _manifestoService = manifestoService;
+            _candidateService   = candidateService;
         }
 
-        [HttpGet("create-manifesto/{candidateId]")]
-        public IActionResult CreateManifesto([FromRoute] Guid candidateId)
+        [HttpGet("create-manifesto/{candidateId}")]
+        public async Task<IActionResult> CreateManifesto([FromRoute] Guid candidateId)
         {
-            return View();
+            var candidate = await _candidateService.GetCandidateListItem();
+
+            var viewModel = new CreateManifestoDto
+            {
+                Candidates = candidate.ToList()
+            };
+            return View(viewModel);
         }
 
         [HttpPost("create-manifesto/{candidateId}")]

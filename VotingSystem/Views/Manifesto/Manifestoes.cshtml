@@ -10,15 +10,15 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title"> @ViewData["Title"]</h4>
-                <a href="@Url.Action("CreateManifesto")" class="card-description"> Create Manifesto </a>
+                @*<a href="@Url.Action("CreateManifesto")" class="card-description"> Create Manifesto </a>*@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th> CandidateId </th>
-                                <th> ManifestoNote </th>
+                                <th> Candidate </th>
+                                <th> Manifesto Note </th>
                                 <th> Action </th>
                             </tr>
                         </thead>
@@ -28,7 +28,7 @@
                                 foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td>@item.CandidateId</td>
+                                        <td>@item.CandidateName</td>
                                         <td>@item.ManifestoNote</td>
                                         <td>
                                             <a href="@Url.Action("EditManifesto",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
@@ -52,3 +52,4 @@
         </div>
     </div>
 </div>
+

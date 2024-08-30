@@ -18,7 +18,7 @@
                         <thead>
                             <tr>
                                 <th> Candidate Name </th>
-                                <th> Matric Number </th>
+                                <th> Matric No. </th>
                                 <th> Election</th>
                                 <th> Level </th>
                                 <th> Position</th>
@@ -40,7 +40,8 @@
                                             <a href="@Url.Action("EditCandidate",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 View <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>|
-                                            <a href="@Url.Action("CreateManifesto", "Manifesto",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
+
+                                            <a href="@Url.Action("CreateManifesto", "Manifesto",new {candidateid = item.Id, candidateName = item.CandidateName})" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 Add Manifesto <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
                                         </td>

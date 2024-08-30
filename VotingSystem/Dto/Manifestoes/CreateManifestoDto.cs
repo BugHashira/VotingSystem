@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace VotingSystem.Dto.Manifestoes
 {
@@ -9,5 +10,10 @@ namespace VotingSystem.Dto.Manifestoes
 
         [Required(ErrorMessage = "Manifesto note is required")]
         public string ManifestoNote { get; set; }
+
+        [Required(ErrorMessage = "Candidate Name is required")]
+        public string CandidateName { get; set; }
+
+        public List<SelectListItem> Candidates { get; set; }
     }
 }

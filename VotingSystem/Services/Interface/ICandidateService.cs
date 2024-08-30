@@ -1,4 +1,5 @@
-﻿using VotingSystem.Dto;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using VotingSystem.Dto;
 using VotingSystem.Dto.Candidates;
 
 namespace VotingSystem.Services.Interface
@@ -10,5 +11,6 @@ namespace VotingSystem.Services.Interface
         Task<BaseResponseModel<IEnumerable<CandidateDto>>> GetAllCandidatesAsync(Guid electionId);
         Task<BaseResponseModel<CandidateDto>> GetCandidateByIdAsync(Guid id);
         Task<BaseResponseModel<bool>> UpdateCandidateAsync(Guid id, UpdateCandidateDto request);
+        Task<IEnumerable<SelectListItem>> GetCandidateListItem();
     }
 }

@@ -4,7 +4,7 @@ using VotingSystem.Models;
 namespace VotingSystem.Data.Entities
 {
     public class Candidate : BaseEntity
-    {
+    { 
         public Guid PositionId { get; set; }
         public ApprovalStatus ApprovalStatus { get; set; }
         public string Level { get; set; }
