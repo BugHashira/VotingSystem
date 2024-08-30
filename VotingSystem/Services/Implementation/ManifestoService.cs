@@ -28,7 +28,7 @@ namespace VotingSystem.Services
                     {
                         Id = x.Id,
                         CandidateId = x.CandidateId,
-                        ManifestoNote = x.ManifestoNote,
+                        ManifestoNote = x.ManifestoDocument,
                         CandidateName = x.Candidate.CandidateName
                     }).ToListAsync();
 
@@ -70,7 +70,7 @@ namespace VotingSystem.Services
                     {
                         Id = x.Id,
                         CandidateId = x.CandidateId,
-                        ManifestoNote = x.ManifestoNote,
+                        ManifestoNote = x.ManifestoDocument,
                         CandidateName = x.Candidate.CandidateName
                     }).FirstOrDefaultAsync();
 
@@ -111,8 +111,10 @@ namespace VotingSystem.Services
                     Id = Guid.NewGuid(),
                     CandidateId = request.CandidateId,
                     Candidate = candidate,
-                    ManifestoNote = request.ManifestoNote,
-                    CreatedDate = DateTime.UtcNow
+                    ManifestoDocument = request.ManifestoNote,
+                    CreatedDate = DateTime.UtcNow,
+                    FileExtension = request.FileExtension,
+                    FileName = request.FileName
                 };
 
                 await _context.Manifestos.AddAsync(manifesto);
@@ -154,7 +156,7 @@ namespace VotingSystem.Services
                     return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
 
                 manifestoExist.CandidateId = request.CandidateId;
-                manifestoExist.ManifestoNote = request.ManifestoNote;
+                manifestoExist.ManifestoDocument = request.ManifestoNote;
                 manifestoExist.ModifiedDate = DateTime.Now;
 
                 _context.Manifestos.Update(manifestoExist);

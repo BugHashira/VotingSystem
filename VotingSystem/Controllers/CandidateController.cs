@@ -34,9 +34,9 @@ namespace VotingSystem.Controllers
 
             if (result.IsSuccessful)
             {
-                return RedirectToAction("Candidates");
+                return RedirectToAction("Elections", "Election");
             }
-            return RedirectToAction("CreateCandidate");
+            return RedirectToAction("CreateCandidate", new { election = electionId});
         }
 
         [HttpGet("edit-candidate/{id}")]

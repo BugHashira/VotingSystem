@@ -4,7 +4,7 @@ namespace VotingSystem.Dto.Manifestoes
     {
         public Guid Id { get; set; }
         public Guid CandidateId { get; set; }
-        public string ManifestoNote { get; set; }
+        public byte[] ManifestoNote { get; set; }
         public string CandidateName { get; set; }
     }
 }

@@ -13,24 +13,42 @@ namespace VotingSystem.Controllers
         public ManifestoController(IManifestoService manifestoService, ICandidateService candidateService)
         {
             _manifestoService = manifestoService;
-            _candidateService   = candidateService;
+            _candidateService = candidateService;
         }
 
         [HttpGet("create-manifesto/{candidateId}")]
         public async Task<IActionResult> CreateManifesto([FromRoute] Guid candidateId)
         {
-            var candidate = await _candidateService.GetCandidateListItem();
 
-            var viewModel = new CreateManifestoDto
-            {
-                Candidates = candidate.ToList()
-            };
-            return View(viewModel);
+            return View();
         }
 
         [HttpPost("create-manifesto/{candidateId}")]
-        public async Task<IActionResult> CreateManifesto([FromRoute] Guid candidateId,[FromForm] CreateManifestoDto request)
+        public async Task<IActionResult> CreateManifesto([FromRoute] Guid candidateId, [FromForm] IFormFile manifestoFileFile)
         {
+
+            if (manifestoFileFile == null)
+            {
+                return RedirectToAction("CreateManifesto", new { candidateId = candidateId });
+            }
+
+            byte[]? image = null;
+
+            if (manifestoFileFile != null)
+            {
+                var stream = new MemoryStream();
+                await manifestoFileFile.CopyToAsync(stream);
+                image = stream.ToArray();
+            }
+
+            var request = new CreateManifestoDto()
+            {
+                CandidateId = candidateId,
+                ManifestoNote = image,
+                FileExtension = manifestoFileFile.FileName,
+                FileName = manifestoFileFile.ContentType,
+            };
+
             var result = await _manifestoService.AddManifestoAsync(request);
 
             if (result.IsSuccessful)

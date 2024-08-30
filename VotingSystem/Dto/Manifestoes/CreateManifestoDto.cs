@@ -9,11 +9,12 @@ namespace VotingSystem.Dto.Manifestoes
         public Guid CandidateId { get; set; }
 
         [Required(ErrorMessage = "Manifesto note is required")]
-        public string ManifestoNote { get; set; }
+        public string FileName { get; set; }
 
-        [Required(ErrorMessage = "Candidate Name is required")]
-        public string CandidateName { get; set; }
+        [Required(ErrorMessage = "Manifesto note is required")]
+        public string FileExtension { get; set; }
 
-        public List<SelectListItem> Candidates { get; set; }
+        [Required(ErrorMessage = "Manifesto note is required")]
+        public byte[] ManifestoNote { get; set; }
     }
 }
