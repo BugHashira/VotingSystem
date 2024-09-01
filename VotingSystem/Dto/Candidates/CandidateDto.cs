@@ -13,5 +13,7 @@ namespace VotingSystem.Dto.Candidates
         public string CandidateName { get; set; }
         public string PositionName { get; set; }
         public string ElectionName { get; set; }
+        public bool HasManifesto { get; set; }
+        public Guid? ManifestoId { get; set; }
     }
 }

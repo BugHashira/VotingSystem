@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using VotingSystem.Dto.Manifestoes;
 using VotingSystem.Services.Interface;
 
@@ -53,7 +54,7 @@ namespace VotingSystem.Controllers
 
             if (result.IsSuccessful)
             {
-                return RedirectToAction("Manifestoes");
+                return RedirectToAction("Elections","Election");
             }
             return RedirectToAction("CreateManifesto");
         }
@@ -120,6 +121,18 @@ namespace VotingSystem.Controllers
             }
 
             return RedirectToAction("Manifestoes");
+        }
+
+
+
+        public async Task<IActionResult> GetPdf(Guid id)
+        {
+
+            var result = await _manifestoService.GetManifestoByIdAsync(id);
+            // Determine the file path based on the ID
+
+            // Return the PDF file as a FileResult
+            return File(result.Data.ManifestoNote, "application/pdf");
         }
     }
 }

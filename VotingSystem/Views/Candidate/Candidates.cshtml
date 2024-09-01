@@ -38,12 +38,18 @@
                                         <td>@item.PositionName</td>
                                         <td>
                                             <a href="@Url.Action("EditCandidate",new {id = item.Id})" class="btn btn-gradient-dark btn-icon-text btn-sm">
-                                                View <i class="mdi mdi-file-check btn-icon-append"></i>
+                                                View Candidate <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>|
-
+                                            @if (item.HasManifesto)
+                                            {
+                                                <button class="btn btn-gradient-dark btn-icon-text btn-sm" data-pdf-id="@item.ManifestoId" id="openPdfBtn">View Manifesto</button>
+                                            }else
+                                            {
                                             <a href="@Url.Action("CreateManifesto", "Manifesto",new {candidateid = item.Id, candidateName = item.CandidateName})" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 Add Manifesto <i class="mdi mdi-file-check btn-icon-append"></i>
                                             </a>
+                                            }
+
                                         </td>
                                     </tr>
 
@@ -61,4 +67,40 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">PDF Viewer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="pdfFrame" style="width:100%; height:500px;" frameborder="0"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.querySelectorAll('#openPdfBtn').forEach(button => {
+        button.addEventListener('click', function () {
+            var pdfId = this.getAttribute('data-pdf-id');
+            var iframe = document.getElementById('pdfFrame');
+            iframe.src = `@Url.Action("GetPdf", "Manifesto")?id=${pdfId}`;
+            $('#pdfModal').modal('show');
+        });
+    });
+</script>

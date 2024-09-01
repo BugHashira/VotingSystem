@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace VotingSystem.Services
 {
- 
+
 
     public class CandidateService : ICandidateService
     {
@@ -28,6 +28,7 @@ namespace VotingSystem.Services
                 var candidates = await _context.Candidates
               .Include(x => x.Election)
               .Include(x => x.Position)
+              .Include(x => x.Manifestos)
               .Where(x => x.ElectionId == electionId)
               .Select(x => new CandidateDto
               {
@@ -39,8 +40,9 @@ namespace VotingSystem.Services
                   Level = x.Level,
                   MatricNumber = x.MatricNumber,
                   PositionId = x.PositionId,
-                  PositionName = x.Position.PositionName
-
+                  PositionName = x.Position.PositionName,
+                  HasManifesto = x.Manifestos.Count > 0 ? true : false,
+                  ManifestoId = x.Manifestos.Count > 0 ? x.Manifestos.Select(x => x.Id).FirstOrDefault() : null,
               }).ToListAsync();
 
 
