@@ -1,4 +1,5 @@
-﻿using VotingSystem.Dto;
+﻿using VotingSystem.Data.Entities;
+using VotingSystem.Dto;
 using VotingSystem.Dto.Users;
 
 namespace VotingSystem.Services.Interface
@@ -10,5 +11,9 @@ namespace VotingSystem.Services.Interface
         Task<BaseResponseModel<IEnumerable<UserDto>>> GetAllUsersAsync();
         Task<BaseResponseModel<UserDto>> GetUserByIdAsync(string id);
         Task<BaseResponseModel<bool>> UpdateUserAsync(Guid id, UpdateUserDto request);
+        Task<BaseResponseModel<bool>> UserRegistration(CreateUserDto request);
+        Task<BaseResponseModel<bool>> UserLogin(UserLoginRequestDto request);
+        User? GetUserName(string name);
+        Task<BaseResponseModel<bool>> SignOutAsync();
     }
 }

@@ -4,16 +4,27 @@ using Microsoft.EntityFrameworkCore;
 using VotingSystem.Services.Interface;
 using VotingSystem.Dto.Users;
 using VotingSystem.Dto;
+using Microsoft.AspNetCore.Identity;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace VotingSystem.Services
 {
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly INotyfService _notyfService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(ApplicationDbContext context)
+        public UserService(ApplicationDbContext context, UserManager<User> userManager,
+            SignInManager<User> signInManager, INotyfService notyfService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _notyfService = notyfService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<BaseResponseModel<IEnumerable<UserDto>>> GetAllUsersAsync()
@@ -233,5 +244,98 @@ namespace VotingSystem.Services
                 };
             }
         }
+
+        public async Task<BaseResponseModel<bool>> UserLogin(UserLoginRequestDto request)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(request.MatricNumber);
+
+                var result = await _signInManager
+                    .PasswordSignInAsync(user!.UserName!, request.Password, false, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+
+                    _notyfService.Success("You're Logged in successfully");
+                    return new BaseResponseModel<bool> { IsSuccessful = true, Message = "You're Logged in successfully" };
+                }
+                _notyfService.Error("Invald Login Attempt");
+                return new BaseResponseModel<bool> { IsSuccessful = true, Message = "Invald Login Attempt" };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponseModel<bool> { IsSuccessful = false, Message = "Invald Login Attempt" };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> UserRegistration(CreateUserDto request)
+        {
+            try
+            {
+                var existingUser = await _userManager.Users.SingleOrDefaultAsync(u => u.MatricNumber == request.MatricNumber);
+                if (existingUser != null)
+                {
+                    _notyfService.Warning("User already exist!");
+                    return new BaseResponseModel<bool> { IsSuccessful = false, Message = "User already exist!" };
+                }
+
+                var user = new User
+                {
+                    UserName = request.MatricNumber,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    Id = Guid.NewGuid().ToString(),
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user, request.Password);
+
+                if (!result.Succeeded)
+                {
+                    _notyfService.Error("User creation failed");
+                    return new BaseResponseModel<bool> { IsSuccessful = false, Message = "User creation failed" };
+                }
+
+                var addRole = await _userManager.AddToRoleAsync(user, "Libarian");
+
+                if (!addRole.Succeeded)
+                {
+                    _notyfService.Error("Add user role failed");
+                    return new BaseResponseModel<bool> { IsSuccessful = false, Message = "User creation failed" };
+                }
+
+
+                _notyfService.Success("Registration was successful");
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                return new BaseResponseModel<bool> { IsSuccessful = true, Message = "Registration was successful." };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponseModel<bool> { IsSuccessful = false, Message = "An error occured" };
+            }
+        }
+
+        public async Task<BaseResponseModel<bool>> SignOutAsync()
+        {
+            await _signInManager.SignOutAsync();
+            return new BaseResponseModel<bool> { IsSuccessful = true, Message = "Sign out successfully." };
+        }
+
+        public User? GetUserName(string name)
+        {
+            var user = _context.Users.Where(x => x.UserName == name).FirstOrDefault();
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            return null;
+        }
+
     }
 }
