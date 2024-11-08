@@ -6,6 +6,7 @@ using VotingSystem.Dto.Users;
 using VotingSystem.Dto;
 using Microsoft.AspNetCore.Identity;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using CloudinaryDotNet.Actions;
 
 namespace VotingSystem.Services
 {
@@ -16,15 +17,17 @@ namespace VotingSystem.Services
         private readonly SignInManager<User> _signInManager;
         private readonly INotyfService _notyfService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public UserService(ApplicationDbContext context, UserManager<User> userManager,
-            SignInManager<User> signInManager, INotyfService notyfService, IHttpContextAccessor httpContextAccessor)
+            SignInManager<User> signInManager, INotyfService notyfService, IHttpContextAccessor httpContextAccessor, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _notyfService = notyfService;
             _httpContextAccessor = httpContextAccessor;
+            _roleManager = roleManager;
         }
 
         public async Task<BaseResponseModel<IEnumerable<UserDto>>> GetAllUsersAsync()
@@ -125,26 +128,35 @@ namespace VotingSystem.Services
                     Id = Guid.NewGuid().ToString(),
                     MatricNumber = request.MatricNumber,
                     CollegeId = request.CollegeId,
-                    DepartmentId = request.DepartmentId
+                    DepartmentId = request.DepartmentId,
+                    UserName = request.MatricNumber
                 };
 
-                await _context.Users.AddAsync(user);
+                var addUser = await _userManager.CreateAsync(user);
+                request.Password = $"Default@{DateTime.Now.Year}";
 
-                if (await _context.SaveChangesAsync() > 0)
-                {
-                    return new BaseResponseModel<bool>()
-                    {
-                        IsSuccessful = true,
-                        Message = "Data created successfully",
-                        Data = true
-                    };
-                }
+                if (!addUser.Succeeded)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = addUser.Errors.First().Description };
+
+                var addPassword = await _userManager
+                     .AddPasswordAsync(user, request.Password);
+
+                if (!addPassword.Succeeded)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "Invalid Password" };
+
+                var userRole = await _userManager
+                    .AddToRolesAsync(user, new List<string> { "User" });
+
+
+                if (!userRole.Succeeded)
+                    return new BaseResponseModel<bool>() { IsSuccessful = false, Message = addUser.Errors.First().Description };
+
 
                 return new BaseResponseModel<bool>()
                 {
-                    IsSuccessful = false,
-                    Message = "Create failed",
-                    Data = false
+                    IsSuccessful = true,
+                    Message = "Data created successfully",
+                    Data = true
                 };
             }
             catch (Exception)

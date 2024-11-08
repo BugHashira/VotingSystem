@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VotingSystem.Dto.Positions;
 using VotingSystem.Services.Interface;
 
 namespace VotingSystem.Controllers
 {
+    [Authorize]
     [Route("position")]
     public class PositionController : Controller
     {
@@ -20,6 +22,7 @@ namespace VotingSystem.Controllers
             return View();
         }
 
+        [Authorize(Roles = ("Admin"))]
         [HttpPost("create-position")]
         public async Task<IActionResult> CreatePosition([FromForm] CreatePositionDto request)
         {
