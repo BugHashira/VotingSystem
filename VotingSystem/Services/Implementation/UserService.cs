@@ -71,23 +71,15 @@ namespace VotingSystem.Services
             }
         }
 
-        public async Task<BaseResponseModel<UserDto>> GetUserByIdAsync(string id)
+        public async Task<BaseResponseModel<UserDto>> GetUserByIdAsync(Guid id)
         {
             try
             {
-                if (!Guid.TryParse(id, out var userId))
-                {
-                    return new BaseResponseModel<UserDto>()
-                    {
-                        IsSuccessful = false,
-                        Message = "Invalid ID format"
-                    };
-                }
 
                 var user = await _context.Users
                     .Include(x => x.College)
                     .Include(x => x.Department)
-                    .Where(x => x.Id.Equals(userId))
+                    .Where(x => x.Id == id.ToString())
                     .Select(x => new UserDto
                     {
                         Id = Guid.Parse(x.Id),
@@ -169,7 +161,7 @@ namespace VotingSystem.Services
         {
             try
             {
-                var userExist = await _context.Users.Where(x => Guid.Parse(x.Id) == id).FirstOrDefaultAsync();
+                var userExist = await _context.Users.FirstOrDefaultAsync(x => x.Id == id.ToString());
 
                 if (userExist == null)
                     return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };
@@ -207,11 +199,11 @@ namespace VotingSystem.Services
             }
         }
 
-        public async Task<BaseResponseModel<bool>> DeleteUserAsync(int id)
+        public async Task<BaseResponseModel<bool>> DeleteUserAsync(Guid id)
         {
             try
             {
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id.ToString());
 
                 if (user == null)
                     return new BaseResponseModel<bool>() { IsSuccessful = false, Message = "No record found", Data = false };

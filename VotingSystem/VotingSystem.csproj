@@ -9,9 +9,18 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\NewFolder\**" />
+    <Compile Remove="NewFolder\**" />
     <Content Remove="Controllers\NewFolder\**" />
+    <Content Remove="NewFolder\**" />
     <EmbeddedResource Remove="Controllers\NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
     <None Remove="Controllers\NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\index.cshtml" />
+    <Content Remove="Views\restricted.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

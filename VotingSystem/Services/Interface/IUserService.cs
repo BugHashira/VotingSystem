@@ -7,9 +7,9 @@ namespace VotingSystem.Services.Interface
     public interface IUserService
     {
         Task<BaseResponseModel<bool>> AddUserAsync(CreateUserDto request);
-        Task<BaseResponseModel<bool>> DeleteUserAsync(int id);
+        Task<BaseResponseModel<bool>> DeleteUserAsync(Guid id);
         Task<BaseResponseModel<IEnumerable<UserDto>>> GetAllUsersAsync();
-        Task<BaseResponseModel<UserDto>> GetUserByIdAsync(string id);
+        Task<BaseResponseModel<UserDto>> GetUserByIdAsync(Guid id);
         Task<BaseResponseModel<bool>> UpdateUserAsync(Guid id, UpdateUserDto request);
         Task<BaseResponseModel<bool>> UserRegistration(CreateUserDto request);
         Task<BaseResponseModel<bool>> UserLogin(UserLoginRequestDto request);

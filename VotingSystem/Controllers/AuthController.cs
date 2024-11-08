@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using VotingSystem.Data.Entities;
 using VotingSystem.Dto.Users;
 using VotingSystem.Services.Interface;
 
@@ -7,6 +9,9 @@ namespace VotingSystem.Controllers
     public class AuthController : Controller
     {
         private readonly IUserService _userService;
+        private readonly SignInManager<User> signInManager;
+
+       
 
         public AuthController(IUserService userService)
         {

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using VotingSystem.Dto.Users;
 using VotingSystem.Services.Interface;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace VotingSystem.Controllers
 {
@@ -8,17 +11,53 @@ namespace VotingSystem.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly ICollegeService _collegeService; // Assuming these services exist
+        private readonly IDepartmentService _departmentService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ICollegeService collegeService, IDepartmentService departmentService)
         {
             _userService = userService;
+            _collegeService = collegeService;
+            _departmentService = departmentService;
         }
 
         [HttpGet("create-user")]
-        public IActionResult CreateUser()
+        public async Task<IActionResult> CreateUser()
         {
+            // Get colleges from the service
+            var collegeResponse = await _collegeService.GetAllCollegesAsync();
+            var departmentResponse = await _departmentService.GetAllDepartmentsAsync();
+
+            // Check if the responses were successful before proceeding
+            if (collegeResponse.IsSuccessful && departmentResponse.IsSuccessful)
+            {
+                // Extract and convert the college data to a list of SelectListItems
+                ViewBag.SelectColleges = collegeResponse.Data.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CollegeName
+                }).ToList();
+
+                // Extract and convert the department data to a list of SelectListItems
+                ViewBag.SelectDepartments = departmentResponse.Data.Select(d => new SelectListItem
+                {
+                    Value = d.Id.ToString(),
+                    Text = d.DepartmentName
+                }).ToList();
+            }
+            else
+            {
+                // Handle the error case if data is not retrieved successfully
+                ViewBag.SelectColleges = new List<SelectListItem>();
+                ViewBag.SelectDepartments = new List<SelectListItem>();
+
+                // Optionally, add an error message
+                ModelState.AddModelError(string.Empty, "Failed to load colleges or departments.");
+            }
+
             return View();
         }
+
 
         [HttpPost("create-user")]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserDto request)
@@ -29,11 +68,30 @@ namespace VotingSystem.Controllers
             {
                 return RedirectToAction("Users");
             }
-            return RedirectToAction("CreateUser");
+
+            // Reload dropdown lists if the form submission fails
+            var collegeResponse = await _collegeService.GetAllCollegesAsync();
+            var departmentResponse = await _departmentService.GetAllDepartmentsAsync();
+
+            // Extract and convert the college data to a list of SelectListItems
+            ViewBag.SelectColleges = collegeResponse.Data.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.CollegeName
+            }).ToList();
+
+            // Extract and convert the department data to a list of SelectListItems
+            ViewBag.SelectDepartments = departmentResponse.Data.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.DepartmentName
+            }).ToList();
+
+            return View();
         }
 
         [HttpGet("edit-user/{id}")]
-        public async Task<IActionResult> EditUser(string id)
+        public async Task<IActionResult> EditUser(Guid id)
         {
             var result = await _userService.GetUserByIdAsync(id);
 
@@ -58,7 +116,7 @@ namespace VotingSystem.Controllers
         }
 
         [HttpGet("detail/{id}")]
-        public async Task<IActionResult> UserDetail(string id)
+        public async Task<IActionResult> UserDetail(Guid id)
         {
             var result = await _userService.GetUserByIdAsync(id);
 
@@ -84,7 +142,7 @@ namespace VotingSystem.Controllers
         }
 
         [HttpGet("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
             var result = await _userService.DeleteUserAsync(id);
 
@@ -95,7 +153,6 @@ namespace VotingSystem.Controllers
 
             return RedirectToAction("Users");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Login(string? returnUrl = null)
@@ -123,7 +180,6 @@ namespace VotingSystem.Controllers
 
             return View();
         }
-
 
         [HttpGet("register-user")]
         public IActionResult Register()

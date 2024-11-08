@@ -18,8 +18,9 @@
                         <thead>
                             <tr>
                                 <th> Matric Number </th>
-                                <th> CollegeId </th>
-                                <th> DepartmentId </th>
+                                <th> College Name </th>
+                                <th> Department Name </th>
+                                <th> Action </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,13 +30,13 @@
                                 {
                                     <tr>
                                         <td>@item.MatricNumber</td>
-                                        <td>@item.CollegeId</td>
-                                        <td>@item.DepartmentId</td>
+                                        <td>@item.CollegeName</td>
+                                        <td>@item.DepartmentName</td>
                                         <td>
-                                            <a href="@Url.Action("EditUser", new { id = item.Id })" class="btn btn-gradient-dark btn-icon-text btn-sm">
+                                            <a href="@Url.Action("EditUser", "User", new { id = item.Id })" class="btn btn-gradient-dark btn-icon-text btn-sm">
                                                 Edit <i class="mdi mdi-file-check btn-icon-append"></i>
-                                            </a>
-                                            <a href="@Url.Action("DeleteUser", new { id = item.Id })" class="btn btn-gradient-danger btn-icon-text btn-sm">
+                                            </a>|
+                                            <a href="@Url.Action("DeleteUser", "User", new { id = item.Id })" class="btn btn-gradient-danger btn-icon-text btn-sm">
                                                 Delete <i class="mdi mdi-delete btn-icon-append"></i>
                                             </a>
                                         </td>
